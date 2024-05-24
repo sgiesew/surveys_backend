@@ -1,41 +1,39 @@
 const db = require("../models");
-const Task = db.tasks;
+const Survey = db.surveys;
 
 exports.create = (req, res) => {
-  if (!req.body.surveyId) {
+  if (!req.body.surveyTypeId) {
     res.status(400).send({
-      message: "The surveyId must be specified!"
+      message: "The surveyTypeId must be specified!"
     });
     return;
   }
 
-  const task = {
-    number: req.body.number,
-    response: req.body.response,
-    surveyId: req.body.surveyId
+  const survey = {
+    num_completed: 0
   };
 
-  Task.create(task)
+  Survey.create(survey)
     .then(data => {
       res.status(201).send(data);
     })
     .catch(err => {
       res.status(500).send({
         message:
-          err.message || "Some error occurred while creating the Task."
+          err.message || "Some error occurred while creating the Survey."
       });
     });
 };
 
 exports.findAll = (req, res) => {
-  Task.findAll()
+  Survey.findAll({ include: ["tasks"] })
     .then(data => {
       res.send(data);
     })
     .catch(err => {
       res.status(500).send({
         message:
-          err.message || "Some error occurred while retrieving tasks."
+          err.message || "Some error occurred while retrieving surveys."
       });
     });
 };
@@ -43,20 +41,20 @@ exports.findAll = (req, res) => {
 exports.findOne = (req, res) => {
   const id = req.params.id;
 
-  Task.findByPk(id)
+  Survey.findByPk(id, { include: ["tasks"] })
     .then(data => {
       if (data) {
         res.send(data);
       }
       else {
         res.status(404).send({
-          message: `Cannot find Task with id=${id}.`
+          message: `Cannot find Survey with id=${id}.`
         });
       }
     })
     .catch(err => {
       res.status(500).send({
-        message: "Error retrieving Task with id=" + id
+        message: "Error retrieving Survey with id=" + id
       });
     });
 };
@@ -64,24 +62,24 @@ exports.findOne = (req, res) => {
 exports.update = (req, res) => {
   const id = req.params.id;
 
-  Task.update({
+  Survey.update({
       where: { id: id }
   })
     .then(num => {
       if (num == 1) {
         res.send({
-          message: "Task was updated successfully!"
+          message: "Survey was updated successfully!"
         });
       }
       else {
         res.status(404).send({
-          message: `Cannot update Task with id=${id}. Maybe Task was not found!`
+          message: `Cannot update Survey with id=${id}. Maybe Survey was not found!`
         });
       }
     })
     .catch(err => {
       res.status(500).send({
-        message: "Could not update Task with id=" + id
+        message: "Could not update Survey with id=" + id
       });
     });
 };
@@ -89,24 +87,24 @@ exports.update = (req, res) => {
 exports.delete = (req, res) => {
   const id = req.params.id;
 
-  Task.destroy({
+  Survey.destroy({
       where: { id: id }
   })
     .then(num => {
       if (num == 1) {
         res.send({
-          message: "Task was deleted successfully!"
+          message: "Survey was deleted successfully!"
         });
       }
       else {
         res.status(404).send({
-          message: `Cannot delete Task with id=${id}. Maybe Task was not found!`
+          message: `Cannot delete Survey with id=${id}. Maybe Survey was not found!`
         });
       }
     })
     .catch(err => {
       res.status(500).send({
-        message: "Could not delete Task with id=" + id
+        message: "Could not delete Survey with id=" + id
       });
     });
 };

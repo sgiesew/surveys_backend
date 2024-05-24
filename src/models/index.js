@@ -21,5 +21,24 @@ db.Sequelize = Sequelize;
 db.sequelize = sequelize;
 
 db.tasks = require("./task.model.js")(sequelize, Sequelize);
+db.surveys = require("./survey.model.js")(sequelize, Sequelize);
+db.statements = require("./statement.model.js")(sequelize, Sequelize);
+db.surveyTypes = require("./surveyType.model.js")(sequelize, Sequelize);
+
+db.surveys.hasMany(db.tasks, { as: "tasks" });
+db.tasks.belongsTo(db.surveys, {
+  foreignKey: "surveyId",
+  as: "survey",
+});
+db.surveyTypes.hasMany(db.statements, { as: "statements" });
+db.statements.belongsTo(db.surveyTypes, {
+  foreignKey: "surveyTypeId",
+  as: "surveyType",
+});
+db.surveyTypes.hasMany(db.surveys, { as: "surveys" });
+db.surveys.belongsTo(db.surveyTypes, {
+  foreignKey: "surveyTypeId",
+  as: "surveyType",
+});
 
 module.exports = db;

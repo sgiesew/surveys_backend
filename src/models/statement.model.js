@@ -1,12 +1,12 @@
 module.exports = (sequelize, DataTypes) => {
-  const Task = sequelize.define("task", {
+  const Statement = sequelize.define("statement", {
     number: {
       type: DataTypes.SMALLINT
     },
-    response: {
-      type: DataTypes.SMALLINT
+    text: {
+      type: DataTypes.TEXT
     }
   });
 
-  return Task;
+  return Statement;
 };
