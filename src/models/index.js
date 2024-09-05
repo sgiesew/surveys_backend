@@ -25,6 +25,8 @@ db.surveys = require("./survey.model.js")(sequelize, Sequelize);
 db.statements = require("./statement.model.js")(sequelize, Sequelize);
 db.surveyTypes = require("./surveyType.model.js")(sequelize, Sequelize);
 
+//db.surveyTypes.sync({ alter: true });
+
 db.surveys.hasMany(db.tasks, { as: "tasks" });
 db.tasks.belongsTo(db.surveys, {
   foreignKey: "surveyId",

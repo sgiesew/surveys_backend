@@ -3,16 +3,19 @@ module.exports = app => {
 
   var router = require("express").Router();
 
-  // Create a new survey
+  // Create a new surveyType
   router.post("/", surveyTypes.create);
 
   // Retrieve all surveyTypes
   router.get("/", surveyTypes.findAll);
 
-  // Retrieve a single survey with id
+  // Retrieve a single surveyType with id
   router.get("/:id", surveyTypes.findOne);
 
-  // Delete a survey with id
+  // Update a surveyType with id
+  router.put("/:id", surveyTypes.update);
+
+  // Delete a surveyType with id
   router.delete("/:id", surveyTypes.delete);
 
   app.use('/api/surveyTypes', router);

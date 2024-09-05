@@ -3,6 +3,7 @@ const SurveyType = db.surveyTypes;
 
 exports.create = (req, res) => {
   const surveyType = {
+    name: req.body.name
   };
 
   SurveyType.create(surveyType)
@@ -47,6 +48,31 @@ exports.findOne = (req, res) => {
     .catch(err => {
       res.status(500).send({
         message: "Error retrieving SurveyType with id=" + id
+      });
+    });
+};
+
+exports.update = (req, res) => {
+  const id = req.params.id;
+
+  SurveyType.update(req.body, {
+      where: { id: id }
+  })
+    .then(num => {
+      if (num == 1) {
+        res.send({
+          message: "SurveyType was updated successfully!"
+        });
+      }
+      else {
+        res.status(404).send({
+          message: `Cannot update SurveyType with id=${id}. Maybe SurveyType was not found!`
+        });
+      }
+    })
+    .catch(err => {
+      res.status(500).send({
+        message: "Could not update SurveyType with id=" + id
       });
     });
 };

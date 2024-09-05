@@ -10,6 +10,8 @@ exports.create = (req, res) => {
   }
 
   const survey = {
+    surveyTypeId: req.body.surveyTypeId,
+    current_task: 0,
     num_completed: 0
   };
 
@@ -26,7 +28,7 @@ exports.create = (req, res) => {
 };
 
 exports.findAll = (req, res) => {
-  Survey.findAll({ include: ["tasks"] })
+  Survey.findAll({ include: [{ model: db.surveyTypes, as: "surveyType"}] })
     .then(data => {
       res.send(data);
     })
@@ -41,7 +43,10 @@ exports.findAll = (req, res) => {
 exports.findOne = (req, res) => {
   const id = req.params.id;
 
-  Survey.findByPk(id, { include: ["tasks"] })
+  Survey.findByPk(id, { include: [
+    { model: db.tasks, as: "tasks"},
+    { model: db.surveyTypes, as: "surveyType", include: [{ model: db.statements, as: "statements"}]}
+    ], nest: true })
     .then(data => {
       if (data) {
         res.send(data);
@@ -54,7 +59,7 @@ exports.findOne = (req, res) => {
     })
     .catch(err => {
       res.status(500).send({
-        message: "Error retrieving Survey with id=" + id
+        message: "Error retrieving Survey with id=" + id + " -> " + err.message
       });
     });
 };
@@ -62,7 +67,7 @@ exports.findOne = (req, res) => {
 exports.update = (req, res) => {
   const id = req.params.id;
 
-  Survey.update({
+  Survey.update(req.body, {
       where: { id: id }
   })
     .then(num => {

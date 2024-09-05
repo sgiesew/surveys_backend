@@ -11,7 +11,7 @@ exports.create = (req, res) => {
 
   const task = {
     number: req.body.number,
-    response: req.body.response,
+    response: 0,
     surveyId: req.body.surveyId
   };
 
@@ -64,7 +64,7 @@ exports.findOne = (req, res) => {
 exports.update = (req, res) => {
   const id = req.params.id;
 
-  Task.update({
+  Task.update(req.body, {
       where: { id: id }
   })
     .then(num => {
