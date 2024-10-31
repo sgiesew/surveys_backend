@@ -1,10 +1,10 @@
 const Sequelize = require("sequelize");
 
 const sequelize = new Sequelize({
-  database: "dbee4lodsl7rce",
-  username: "yoxlbethsnsqln",
-  password: "684957725f8a7eafa0934fed716a3db48b36d648e04dc92a89e1767bc3662451",
-  host: "ec2-34-241-67-9.eu-west-1.compute.amazonaws.com",
+  database: "d5tbcdsf1umo0s",
+  username: "uck6m3qsb2iirh",
+  password: "pdad47f28cefcfab371dad7f0795ba509942563d8dfb577200d0f61652e767b65",
+  host: "c54frm92m19bh1.cluster-czz5s0kz4scl.eu-west-1.rds.amazonaws.com",
   port: 5432,
   dialect: "postgres",
   dialectOptions: {
@@ -25,7 +25,9 @@ db.surveys = require("./survey.model.js")(sequelize, Sequelize);
 db.statements = require("./statement.model.js")(sequelize, Sequelize);
 db.surveyTypes = require("./surveyType.model.js")(sequelize, Sequelize);
 
-//db.surveyTypes.sync({ alter: true });
+//db.surveys.sync({ alter: true }); //!!!
+//db.surveyTypes.sync({ alter: true }); //!!!
+//sequelize.sync({ alter: true });
 
 db.surveys.hasMany(db.tasks, { as: "tasks" });
 db.tasks.belongsTo(db.surveys, {

@@ -11,8 +11,10 @@ exports.create = (req, res) => {
 
   const survey = {
     surveyTypeId: req.body.surveyTypeId,
+    num_tasks: req.body.num_tasks,
     current_task: 0,
-    num_completed: 0
+    num_completed: 0,
+    completed: false
   };
 
   Survey.create(survey)
@@ -44,7 +46,7 @@ exports.findOne = (req, res) => {
   const id = req.params.id;
 
   Survey.findByPk(id, { include: [
-    { model: db.tasks, as: "tasks"},
+    { model: db.tasks, as: "tasks", order: [ ["number", "ASC"] ], separate: true},
     { model: db.surveyTypes, as: "surveyType", include: [{ model: db.statements, as: "statements"}]}
     ], nest: true })
     .then(data => {
