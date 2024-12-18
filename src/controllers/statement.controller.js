@@ -61,6 +61,31 @@ exports.findOne = (req, res) => {
     });
 };
 
+exports.update = (req, res) => {
+  const id = req.params.id;
+
+  Statement.update(req.body, {
+      where: { id: id }
+  })
+    .then(num => {
+      if (num == 1) {
+        res.send({
+          message: "Statement was updated successfully!"
+        });
+      }
+      else {
+        res.status(404).send({
+          message: `Cannot update Statement with id=${id}. Maybe Statement was not found!`
+        });
+      }
+    })
+    .catch(err => {
+      res.status(500).send({
+        message: "Could not update Statement with id=" + id
+      });
+    });
+};
+
 exports.delete = (req, res) => {
   const id = req.params.id;
 

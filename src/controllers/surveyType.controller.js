@@ -19,7 +19,7 @@ exports.create = (req, res) => {
 };
 
 exports.findAll = (req, res) => {
-  SurveyType.findAll({ include: ["statements"] })
+  SurveyType.findAll({ include: [{ model: db.statements, as: "statements", order: [ ["number", "ASC"] ], separate: true}] })
     .then(data => {
       res.send(data);
     })
@@ -34,7 +34,7 @@ exports.findAll = (req, res) => {
 exports.findOne = (req, res) => {
   const id = req.params.id;
 
-  SurveyType.findByPk(id, { include: ["statements"] })
+  SurveyType.findByPk(id, { include: [{ model: db.statements, as: "statements", order: [ ["number", "ASC"] ], separate: true}] })
     .then(data => {
       if (data) {
         res.send(data);

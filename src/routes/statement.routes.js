@@ -12,6 +12,9 @@ module.exports = app => {
   // Retrieve a single statement with id
   router.get("/:id", statements.findOne);
 
+  // Update a statement with id
+  router.put("/:id", statements.update);
+
   // Delete a statement with id
   router.delete("/:id", statements.delete);
 
