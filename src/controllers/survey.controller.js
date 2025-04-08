@@ -1,5 +1,7 @@
 const db = require("../models");
 const Survey = db.surveys;
+const Task = db.tasks;
+
 
 exports.create = (req, res) => {
   if (!req.body.surveyTypeId) {
@@ -74,6 +76,25 @@ exports.update = (req, res) => {
   })
     .then(num => {
       if (num == 1) {
+        req.body.tasks.forEach( (task, index) => {
+          Task.update(task, {
+            where: { id: task.id }
+          })
+          .then(num => {
+            if (num != 1) {
+              res.status(404).send({
+                message: `Cannot update Survey with id=${id}. Task with id=${task.id} not found!`
+              });
+              return;
+            }
+          })
+          .catch(err => {
+            res.status(500).send({
+              message: `Could not update Survey with id=${id}. Problem with task id=${task.id}.`
+            });
+            return;
+          });
+        });
         res.send({
           message: "Survey was updated successfully!"
         });
