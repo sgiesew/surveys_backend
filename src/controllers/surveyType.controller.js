@@ -5,6 +5,7 @@ const Statement = db.statements;
 exports.create = (req, res) => {
   const surveyType = {
     name: req.body.name,
+    surveyTypeStatusId: 1,
     statements: req.body.statements
   };
 
@@ -35,7 +36,7 @@ exports.create = (req, res) => {
 };
 
 exports.findAll = (req, res) => {
-  SurveyType.findAll({ include: [{ model: db.statements, as: "statements", order: [ ["number", "ASC"] ], separate: true}] })
+  SurveyType.findAll({ include: [{ model: db.surveyTypeStatus, as: "surveyTypeStatus"}, { model: db.statements, as: "statements", order: [ ["number", "ASC"] ], separate: true}] })
     .then(data => {
       res.send(data);
     })
