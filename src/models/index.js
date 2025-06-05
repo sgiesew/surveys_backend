@@ -25,8 +25,9 @@ db.surveys = require("./survey.model.js")(sequelize, Sequelize);
 db.statements = require("./statement.model.js")(sequelize, Sequelize);
 db.surveyTypes = require("./surveyType.model.js")(sequelize, Sequelize);
 db.surveyTypeStatus = require("./surveyTypeStatus.model.js")(sequelize, Sequelize);
+db.persons = require("./person.model.js")(sequelize, Sequelize);
+db.roles = require("./role.model.js")(sequelize, Sequelize);
 
-//db.surveys.sync({ alter: true }); //!!!
 //db.surveyTypes.sync({ alter: true }); //!!!
 //sequelize.sync({ alter: true });
 //sequelize.sync({ force: true });
@@ -50,6 +51,21 @@ db.surveyTypeStatus.hasMany(db.surveyTypes, { as: "surveyTypes" });
 db.surveyTypes.belongsTo(db.surveyTypeStatus, {
   foreignKey: "surveyTypeStatusId",
   as: "surveyTypeStatus",
+});
+db.persons.hasMany(db.surveys, { as: "surveys" });
+db.surveys.belongsTo(db.persons, {
+  foreignKey: "personId",
+  as: "person",
+});
+db.persons.hasMany(db.surveyTypes, { as: "surveyTypes" });
+db.surveyTypes.belongsTo(db.persons, {
+  foreignKey: "personId",
+  as: "person",
+});
+db.roles.hasMany(db.persons, { as: "persons" });
+db.persons.belongsTo(db.roles, {
+  foreignKey: "roleId",
+  as: "role",
 });
 
 module.exports = db;

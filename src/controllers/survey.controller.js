@@ -13,6 +13,7 @@ exports.create = (req, res) => {
 
   const survey = {
     surveyTypeId: req.body.surveyTypeId,
+    personId: req.body.personId,
     num_tasks: req.body.num_tasks,
     current_task: 0,
     num_completed: 0,
@@ -21,6 +22,24 @@ exports.create = (req, res) => {
 
   Survey.create(survey)
     .then(data => {
+      for (let i = 0; i < req.body.num_tasks; i++) {
+        const task = {
+          number: i,
+          response: 0,
+          surveyId: data.id
+        };
+        Task.create(task)
+          .then(data => {
+
+          })
+          .catch(err => {
+            res.status(500).send({
+              message:
+                "Some error occurred while creating the Task."
+            });
+            return;
+          });
+      }
       res.status(201).send(data);
     })
     .catch(err => {
@@ -76,7 +95,7 @@ exports.update = (req, res) => {
   })
     .then(num => {
       if (num == 1) {
-        req.body.tasks.forEach( (task, index) => {
+        req.body.tasks.forEach( task => {
           Task.update(task, {
             where: { id: task.id }
           })
@@ -115,24 +134,42 @@ exports.update = (req, res) => {
 exports.delete = (req, res) => {
   const id = req.params.id;
 
-  Survey.destroy({
-      where: { id: id }
+  Task.destroy({
+      where: { surveyId: id }
   })
     .then(num => {
-      if (num == 1) {
-        res.send({
-          message: "Survey was deleted successfully!"
+      if (num > 0) {
+        Survey.destroy({
+            where: { id: id }
+        })
+          .then(num => {
+            if (num == 1) {
+              res.send({
+                message: "Survey & Tasks were deleted successfully!"
+              });
+            }
+            else {
+              res.status(404).send({
+                message: `Cannot delete Survey with id=${id}. Maybe SurveyType was not found!`
+              });
+            }
+          })
+        .catch(err => {
+          res.status(500).send({
+            message: "Could not delete Survey with id=" + id
+          });
         });
       }
       else {
         res.status(404).send({
-          message: `Cannot delete Survey with id=${id}. Maybe Survey was not found!`
+          message: `Cannot delete tasks of Survey with id=${id}. Maybe SurveyType was not found!`
         });
       }
     })
     .catch(err => {
       res.status(500).send({
-        message: "Could not delete Survey with id=" + id
+        message: "Could not delete tasks of Survey with id=" + id
       });
     });
+
 };

@@ -36,6 +36,8 @@ require("./src/routes/survey.routes")(app);
 require("./src/routes/statement.routes")(app);
 require("./src/routes/surveyType.routes")(app);
 require("./src/routes/surveyTypeStatus.routes")(app);
+require("./src/routes/person.routes")(app);
+require("./src/routes/role.routes")(app);
 
 // set port, listen for requests
 const PORT = process.env.PORT || 8080;

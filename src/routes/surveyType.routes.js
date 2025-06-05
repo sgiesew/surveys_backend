@@ -18,5 +18,8 @@ module.exports = app => {
   // Delete a surveyType with id
   router.delete("/:id", surveyTypes.delete);
 
+  // Retrieve all surveys of surveyType with id
+  router.get("/:id/surveys", surveyTypes.findSurveys);
+
   app.use('/api/surveyTypes', router);
 };
