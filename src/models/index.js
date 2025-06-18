@@ -28,7 +28,7 @@ db.surveyTypeStatus = require("./surveyTypeStatus.model.js")(sequelize, Sequeliz
 db.persons = require("./person.model.js")(sequelize, Sequelize);
 db.roles = require("./role.model.js")(sequelize, Sequelize);
 
-//db.surveyTypes.sync({ alter: true }); //!!!
+//db.persons.sync({ alter: true }); //!!!
 //sequelize.sync({ alter: true });
 //sequelize.sync({ force: true });
 

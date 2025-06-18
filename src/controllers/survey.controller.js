@@ -51,7 +51,19 @@ exports.create = (req, res) => {
 };
 
 exports.findAll = (req, res) => {
-  Survey.findAll({ include: [{ model: db.surveyTypes, as: "surveyType"}] })
+  var args = {
+    include: [
+      { model: db.surveyTypes, as: "surveyType"},
+      { model: db.persons, as: "person"},
+    ]
+  };
+  if (req.user.role.usid === "Respondent"){
+    args.where = { personId: req.user.id };
+  }
+  else {
+    args.order = [ [{ model: db.persons, as: "person" }, "lastName", "asc"] ];
+  }
+  Survey.findAll(args)
     .then(data => {
       res.send(data);
     })

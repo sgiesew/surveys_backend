@@ -1,9 +1,11 @@
 const Sequelize = require("sequelize");
 const db = require("../models");
 const { QueryTypes } = require('sequelize');
+const { Op } = require('sequelize');
 const SurveyType = db.surveyTypes;
 const Statement = db.statements;
 const Survey = db.surveys;
+const Task = db.tasks;
 
 exports.create = (req, res) => {
   const surveyType = {
@@ -41,7 +43,7 @@ exports.create = (req, res) => {
 };
 
 exports.findAll = (req, res) => {
-  SurveyType.findAll({
+  var args = {
     attributes: { 
       include: [
         [Sequelize.fn("COUNT", Sequelize.col("statements.id")), "statementsCount"]
@@ -52,8 +54,13 @@ exports.findAll = (req, res) => {
       { model: db.persons, as: "person"},
       { model: db.statements, as: "statements", attributes:[]}
     ],
+    order: [ ["name", "ASC"] ],
     group: ["surveyType.id", "surveyTypeStatus.id", "person.id"]
-    })
+  };
+  if (req.user.role.usid === "Supervisor"){
+    args.where = { personId: req.user.id };
+  }
+  SurveyType.findAll(args)
     .then(data => {
       res.send(data);
     })
@@ -184,40 +191,60 @@ exports.update = (req, res) => {
 
 exports.delete = (req, res) => {
   const id = req.params.id;
+  var surveyIds = [];
 
   Statement.destroy({
       where: { surveyTypeId: id }
   })
     .then(num => {
       if (num > 0) {
-        Survey.destroy({
+        Survey.findAll({
             where: { surveyTypeId: id }
         })
-        .catch(err => {
-          res.status(500).send({
-            message: "Could not delete surveys of SurveyType with id=" + id
-          });
-        });
-        SurveyType.destroy({
-            where: { id: id }
-        })
-          .then(num => {
-            if (num == 1) {
-              res.send({
-                message: "SurveyType & Statements were deleted successfully!"
+          .then(surveys => {
+            surveyIds = surveys.map( survey => survey.id);
+            if (surveyIds.length > 0){
+              Task.destroy({
+                where: {
+                  surveyId: {
+                    [Op.or]: surveyIds,
+                  },
+                },
               });
             }
-            else {
-              res.status(404).send({
-                message: `Cannot delete SurveyType with id=${id}. Maybe SurveyType was not found!`
+
+            Survey.destroy({
+                where: { surveyTypeId: id }
+            })
+            .catch(err => {
+              res.status(500).send({
+                message: "Could not delete surveys of SurveyType with id=" + id
               });
-            }
+            });
+
+            SurveyType.destroy({
+                where: { id: id }
+            })
+              .then(num => {
+                if (num == 1) {
+                  res.send({
+                    message: "SurveyType, Statements & Tasks were deleted successfully!"
+                  });
+                }
+                else {
+                  res.status(404).send({
+                    message: `Cannot delete SurveyType with id=${id}. Maybe SurveyType was not found!`
+                  });
+                }
+              })
+            .catch(err => {
+              res.status(500).send({
+                message: "Could not delete SurveyType with id=" + id
+              });
+            });
+
           })
-        .catch(err => {
-          res.status(500).send({
-            message: "Could not delete SurveyType with id=" + id
-          });
-        });
+
       }
       else {
         res.status(404).send({
